@@ -5,6 +5,6 @@ INFO_WIDTH = 300
 BLOCK_SIZE = 40
 
 # colors
+BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-
-# shapes
+RED = (255, 0, 0)

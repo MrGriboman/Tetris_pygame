@@ -3,8 +3,8 @@ import math
 import sys
 from settings import *
 from tetromino import Tetromino
+from Block import Block
 
-pg.init()
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 def draw_grid():
@@ -14,16 +14,25 @@ def draw_grid():
             pg.draw.rect(screen, WHITE, rect, 1)
 
 def main():
+    pg.init()
+    tetrominoes = []
+    tetromino = Tetromino("I", 3, 3)
+    tetrominoes.append(tetromino)
     while True:
-        draw_grid()  
-        tetromino = Tetromino("S")
-        
-        # TODO перенести в отдельный метод класса Tetromino 
-        for (index, block) in enumerate(tetromino.blocks):
-            if block == 1:
-                rect = pg.Rect(40 + ((index - 4 * (index // 4)) - 1) * BLOCK_SIZE, 40 + (index // 4) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
-                pg.draw.rect(screen, (255, 0, 0), rect)
+        screen.fill(BLACK)
+        for figure in tetrominoes:
+            figure.render(screen)
+        draw_grid()
         for event in pg.event.get():
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_SPACE:
+                    tetromino.rotate()
+                if event.key == pg.K_DOWN:
+                    tetromino.go_down()
+                if event.key == pg.K_LEFT:
+                    tetromino.go_left()
+                if event.key == pg.K_RIGHT:
+                    tetromino.go_right()
             if event.type == pg.QUIT:
                 pg.quit()
         pg.display.update()
