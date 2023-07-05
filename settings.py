@@ -1,0 +1,10 @@
+# sizes
+SCREEN_WIDTH = 700
+SCREEN_HEIGHT = 800
+INFO_WIDTH = 300
+BLOCK_SIZE = 40
+
+# colors
+WHITE = (255, 255, 255)
+
+# shapes
