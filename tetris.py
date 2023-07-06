@@ -52,13 +52,13 @@ def main():
                 if event.key == pg.K_SPACE:
                     active_tetromino.rotate()
                 if event.key == pg.K_LEFT:
-                    active_tetromino.go_left()
+                    active_tetromino.go_left(game_field)
                 if event.key == pg.K_RIGHT:
-                    active_tetromino.go_right()
+                    active_tetromino.go_right(game_field)
                 if event.key == pg.K_DOWN:
                     MOVE_DOWN_TIMER = 600
             if event.type == move_piece_down_event:
-                active_tetromino.is_landed = not active_tetromino.go_down()
+                active_tetromino.is_landed = not active_tetromino.go_down(game_field)
             if event.type == pg.KEYUP:
                 if event.key == pg.K_DOWN:
                     MOVE_DOWN_TIMER = 800

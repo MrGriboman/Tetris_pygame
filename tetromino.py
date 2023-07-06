@@ -41,30 +41,39 @@ class Tetromino:
             block.y += pivot_y
 
 
-    def go_down(self):
+    def go_down(self, game_field):
         if self.get_bottom() + 1 >= BOTTOM_BORDER:
             return False
-        self.y += 1
+        for block in self.blocks:
+            if game_field[block.y + 1][block.x] == 1:
+                return False
         for block in self.blocks:
             block.y += 1
+        self.y += 1
         return True
 
 
-    def go_left(self):
+    def go_left(self, game_field):
         if self.get_left() <= LEFT_BORDER:
             return False
-        self.x -= 1
+        for block in self.blocks:
+            if game_field[block.y][block.x - 1] == 1:
+                return False
         for block in self.blocks:
             block.x -= 1
+        self.x -= 1
         return True
 
 
-    def go_right(self):
+    def go_right(self, game_field):
         if self.get_right() + 1 >= RIGHT_BORDER:
             return False
-        self.x += 1
+        for block in self.blocks:
+            if game_field[block.y][block.x + 1] == 1:
+                return False
         for block in self.blocks:
             block.x += 1
+        self.x += 1
         return True
 
 
