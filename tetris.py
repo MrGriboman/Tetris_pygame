@@ -7,6 +7,7 @@ from tetromino import Tetromino
 from Block import Block
 from shapes import shapes
 
+
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pg.time.Clock()
 move_piece_down_event = pg.USEREVENT + 1
@@ -16,6 +17,7 @@ pg.time.set_timer(move_piece_down_event, MOVE_DOWN_TIMER)
 tetrominoes = []
 game_field = [[(0, None)] * 10 for i in range(20)]
 shapes_list = list(shapes.keys())
+
 
 def draw_grid():
     for x in range(0, SCREEN_WIDTH - INFO_WIDTH, BLOCK_SIZE):
@@ -36,22 +38,40 @@ def render_all_blocks():
                 rect = pg.Rect(j * BLOCK_SIZE, i * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
                 pg.draw.rect(screen, game_field[i][j][1], rect)
 
+def check_full_lines():
+    deleted = False
+    for i in range(20):
+        line = [game_field[i][j][0] for j in range(10)]
+        if all(line):
+            deleted = True
+            for j in range(10):
+                game_field[i][j] = (0, None)
+    '''if deleted:
+        for i in range(20):
+            for j in range(10):
+                if game_field[i][j][0] == 1:
+                    k = i
+                    color = game_field[i][j][1]
+                    while k < 19 and game_field[k + 1][j][0] == 0:
+                        game_field[k][j] == (0, None)
+                        game_field[k + 1][j] = (1, color)
+                        k += 1'''
+
 
 def main():
     pg.init()    
     shape = random.choice(shapes_list)
-    active_tetromino = Tetromino(shape, 3, 0)
-    tetrominoes.append(active_tetromino)
+    active_tetromino = Tetromino(shape, 3, 0)    
     while True:
         clock.tick(60)
         screen.fill(GREY)
 
-        if tetrominoes[-1].is_landed:
+        if active_tetromino.is_landed:
             update_field(active_tetromino)
             shape = random.choice(shapes_list)
             active_tetromino = Tetromino(shape, 3, 0)
-            tetrominoes.append(active_tetromino)
         active_tetromino.render(screen)
+        check_full_lines()
         render_all_blocks()
         draw_grid()
 
@@ -64,12 +84,14 @@ def main():
                 if event.key == pg.K_RIGHT:
                     active_tetromino.go_right(game_field)
                 if event.key == pg.K_DOWN:
-                    MOVE_DOWN_TIMER = 600
+                    pg.time.set_timer(move_piece_down_event, 1)
             if event.type == move_piece_down_event:
-                active_tetromino.is_landed = not active_tetromino.go_down(game_field)
+                if not active_tetromino.go_down(game_field):
+                    active_tetromino.is_landed = True
+                    pg.time.set_timer(move_piece_down_event, MOVE_DOWN_TIMER)
             if event.type == pg.KEYUP:
                 if event.key == pg.K_DOWN:
-                    MOVE_DOWN_TIMER = 800
+                    pg.time.set_timer(move_piece_down_event, MOVE_DOWN_TIMER)
             if event.type == pg.QUIT:
                 pg.quit()
         pg.display.update()
