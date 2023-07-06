@@ -18,3 +18,6 @@ CYAN = (0, 255, 255)
 YELLOW = (255, 255, 0)
 PURPLE = (128, 0, 128)
 GREY = (127, 127, 127)
+
+# timers
+MOVE_DOWN_TIMER = 800 # milliseconds

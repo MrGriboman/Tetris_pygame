@@ -10,6 +10,7 @@ class Tetromino:
         self.y = y
         self.shape = shape
         self.color = colors.get(shape)
+        self.is_landed = False
         self.blocks = []
         self.fill_blocks()
 
