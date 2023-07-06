@@ -29,12 +29,19 @@ def update_field(tetromino):
             game_field[block.y][block.x] = (1, tetromino.color)
 
 
+def render_all_blocks():
+    for i in range(20):
+        for j in range(10):
+            if game_field[i][j][0] == 1:
+                rect = pg.Rect(j * BLOCK_SIZE, i * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
+                pg.draw.rect(screen, game_field[i][j][1], rect)
+
+
 def main():
     pg.init()    
     shape = random.choice(shapes_list)
     active_tetromino = Tetromino(shape, 3, 0)
     tetrominoes.append(active_tetromino)
-
     while True:
         clock.tick(60)
         screen.fill(GREY)
@@ -44,8 +51,8 @@ def main():
             shape = random.choice(shapes_list)
             active_tetromino = Tetromino(shape, 3, 0)
             tetrominoes.append(active_tetromino)
-        for figure in tetrominoes:
-            figure.render(screen)
+        active_tetromino.render(screen)
+        render_all_blocks()
         draw_grid()
 
         for event in pg.event.get():
