@@ -1,4 +1,4 @@
-from shapes import shapes, pivots
+from shapes import shapes, pivots, colors
 import pygame as pg
 from settings import *
 from Block import Block
@@ -9,6 +9,7 @@ class Tetromino:
         self.x = x
         self.y = y
         self.shape = shape
+        self.color = colors.get(shape)
         self.blocks = []
         self.fill_blocks()
 
@@ -23,7 +24,7 @@ class Tetromino:
 
     def render(self, screen):
         for block in self.blocks:
-            block.render(screen, RED)
+            block.render(screen, self.color)
 
     def rotate(self):
         if self.shape == "O":
@@ -40,18 +41,39 @@ class Tetromino:
 
 
     def go_down(self):
+        if self.get_bottom() + 1 >= BOTTOM_BORDER:
+            return False
         self.y += 1
         for block in self.blocks:
             block.y += 1
+        return True
 
 
     def go_left(self):
+        if self.get_left() <= LEFT_BORDER:
+            return False
         self.x -= 1
         for block in self.blocks:
             block.x -= 1
+        return True
 
 
     def go_right(self):
+        if self.get_right() + 1 >= RIGHT_BORDER:
+            return False
         self.x += 1
         for block in self.blocks:
             block.x += 1
+        return True
+
+
+    def get_bottom(self):
+        return max([block.y for block in self.blocks])
+
+    
+    def get_left(self):
+        return min([block.x for block in self.blocks])
+
+
+    def get_right(self):
+        return max([block.x for block in self.blocks])

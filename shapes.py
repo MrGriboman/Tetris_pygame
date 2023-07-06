@@ -1,3 +1,5 @@
+from settings import *
+
 shapes = {
    # "I": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
     "I": [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -16,4 +18,14 @@ pivots = {
     "L": 5,
     "S": 1,
     "Z": 2
+}
+
+colors = {
+    "I": RED,
+    "O": PURPLE,
+    "T": GREEN,
+    "J": BLUE,
+    "L": ORANGE,
+    "S": CYAN,
+    "Z": YELLOW
 }
