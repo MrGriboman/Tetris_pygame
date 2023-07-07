@@ -20,12 +20,13 @@ class Tetromino:
             if block == 1:
                 block_x = self.x + ((index - 4 * (index // 4)) - 1)
                 block_y = self.y + (index // 4)
-                self.blocks.append(Block(block_x, block_y))
+                self.blocks.append(Block(block_x, block_y, self.color))
 
 
     def render(self, screen):
         for block in self.blocks:
-            block.render(screen, self.color)
+            block.render(screen)
+
 
     def rotate(self):
         if self.shape == "O":
@@ -45,7 +46,7 @@ class Tetromino:
         if self.get_bottom() + 1 >= BOTTOM_BORDER:
             return False
         for block in self.blocks:
-            if game_field[block.y + 1][block.x] == 1:
+            if game_field[block.y + 1][block.x] is not None:
                 return False
         for block in self.blocks:
             block.y += 1
@@ -57,7 +58,7 @@ class Tetromino:
         if self.get_left() <= LEFT_BORDER:
             return False
         for block in self.blocks:
-            if game_field[block.y][block.x - 1] == 1:
+            if game_field[block.y][block.x - 1] is not None:
                 return False
         for block in self.blocks:
             block.x -= 1
@@ -69,7 +70,7 @@ class Tetromino:
         if self.get_right() + 1 >= RIGHT_BORDER:
             return False
         for block in self.blocks:
-            if game_field[block.y][block.x + 1] == 1:
+            if game_field[block.y][block.x + 1] is not None:
                 return False
         for block in self.blocks:
             block.x += 1
