@@ -15,7 +15,7 @@ move_piece_down_event = pg.USEREVENT + 1
 pg.time.set_timer(move_piece_down_event, MOVE_DOWN_TIMER)
 
 tetrominoes = []
-game_field = [[(0, None)] * 10 for i in range(20)]
+game_field = [[None] * 10 for i in range(20)]
 shapes_list = list(shapes.keys())
 
 
@@ -28,24 +28,23 @@ def draw_grid():
 
 def update_field(tetromino):
         for block in tetromino.blocks:
-            game_field[block.y][block.x] = (1, tetromino.color)
+            game_field[block.y][block.x] = Block(block.x, block.y, tetromino.color)
 
 
 def render_all_blocks():
     for i in range(20):
         for j in range(10):
-            if game_field[i][j][0] == 1:
-                rect = pg.Rect(j * BLOCK_SIZE, i * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
-                pg.draw.rect(screen, game_field[i][j][1], rect)
+            if game_field[i][j] is not None:
+                game_field[i][j].render(screen)
 
 def check_full_lines():
     deleted = False
     for i in range(20):
-        line = [game_field[i][j][0] for j in range(10)]
+        line = [game_field[i][j] for j in range(10)]
         if all(line):
             deleted = True
             for j in range(10):
-                game_field[i][j] = (0, None)
+                game_field[i][j] = None
     '''if deleted:
         for i in range(20):
             for j in range(10):
