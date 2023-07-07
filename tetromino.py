@@ -46,7 +46,7 @@ class Tetromino:
         if self.get_bottom() + 1 >= BOTTOM_BORDER:
             return False
         for block in self.blocks:
-            if game_field[block.y + 1][block.x] is not None:
+            if (block.x, block.y + 1) in game_field:
                 return False
         for block in self.blocks:
             block.y += 1
@@ -58,7 +58,7 @@ class Tetromino:
         if self.get_left() <= LEFT_BORDER:
             return False
         for block in self.blocks:
-            if game_field[block.y][block.x - 1] is not None:
+            if (block.x - 1, block.y) in game_field:
                 return False
         for block in self.blocks:
             block.x -= 1
@@ -70,7 +70,7 @@ class Tetromino:
         if self.get_right() + 1 >= RIGHT_BORDER:
             return False
         for block in self.blocks:
-            if game_field[block.y][block.x + 1] is not None:
+            if (block.x + 1, block.y) in game_field:
                 return False
         for block in self.blocks:
             block.x += 1

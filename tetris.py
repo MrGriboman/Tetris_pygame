@@ -6,6 +6,8 @@ from settings import *
 from tetromino import Tetromino
 from Block import Block
 from shapes import shapes
+import resource
+import faulthandler
 
 
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -15,12 +17,12 @@ move_piece_down_event = pg.USEREVENT + 1
 pg.time.set_timer(move_piece_down_event, MOVE_DOWN_TIMER)
 
 tetrominoes = []
-game_field = [[None] * 10 for i in range(20)]
+game_field = dict()
 shapes_list = list(shapes.keys())
 
 pg.mixer.init()
-pg.mixer.music.load('main_theme.wav')
-line_deleted = pg.mixer.Sound('line_deleted.wav')
+pg.mixer.music.load('sounds/main_theme.wav')
+line_deleted = pg.mixer.Sound('sounds/line_deleted.wav')
 
 
 def draw_grid():
@@ -32,14 +34,13 @@ def draw_grid():
 
 def update_field(tetromino):
         for block in tetromino.blocks:
-            game_field[block.y][block.x] = Block(block.x, block.y, tetromino.color)
+           game_field[(block.x, block.y)] = Block(block.x, block.y, tetromino.color)
 
 
 def render_all_blocks():
-    for line in game_field:
-        for block in line:
-            if block is not None:
-                block.render(screen)
+    for block in game_field.values():
+        block.render(screen)
+
 
 def check_full_lines():
     count = 0
@@ -52,14 +53,18 @@ def check_full_lines():
                 upper_line = i
             for j in range(10):
                 game_field[i][j] = None
-    if count > 0:
+    if count > 0:        
         for i in range(upper_line - 1, 0, -1):
             for j in range(10):
                 if game_field[i][j] is not None:
                     game_field[i + count][j] = game_field[i][j]
                     game_field[i + count][j].y += count
                     game_field[i][j] = None
-        pg.mixer.Sound.play(line_deleted)
+        pg.mixer.Sound.play(line_deleted)        
+
+
+def game_over():
+    return any(game_field[0])
 
 
 def main():
@@ -67,7 +72,9 @@ def main():
     shape = random.choice(shapes_list)
     active_tetromino = Tetromino(shape, 3, 0)
     pg.mixer.music.play(-1)
+    faulthandler.enable()
     while True:
+        print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
         clock.tick(60)
         screen.fill(GREY)
 
@@ -76,9 +83,9 @@ def main():
             shape = random.choice(shapes_list)
             active_tetromino = Tetromino(shape, 3, 0)
         active_tetromino.render(screen)
-        check_full_lines()
+        #check_full_lines()
         render_all_blocks()
-        draw_grid()
+        draw_grid()        
 
         for event in pg.event.get():
             if event.type == pg.KEYDOWN:
