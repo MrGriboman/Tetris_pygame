@@ -27,6 +27,7 @@ class Tetromino:
         for block in self.blocks:
             block.render(screen)
 
+
     def rotate(self):
         if self.shape == "O":
             return

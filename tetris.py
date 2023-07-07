@@ -18,6 +18,10 @@ tetrominoes = []
 game_field = [[None] * 10 for i in range(20)]
 shapes_list = list(shapes.keys())
 
+pg.mixer.init()
+pg.mixer.music.load('main_theme.wav')
+line_deleted = pg.mixer.Sound('line_deleted.wav')
+
 
 def draw_grid():
     for x in range(0, SCREEN_WIDTH - INFO_WIDTH, BLOCK_SIZE):
@@ -32,35 +36,37 @@ def update_field(tetromino):
 
 
 def render_all_blocks():
-    for i in range(20):
-        for j in range(10):
-            if game_field[i][j] is not None:
-                game_field[i][j].render(screen)
+    for line in game_field:
+        for block in line:
+            if block is not None:
+                block.render(screen)
 
 def check_full_lines():
-    deleted = False
+    count = 0
+    upper_line = -1
     for i in range(20):
         line = [game_field[i][j] for j in range(10)]
         if all(line):
-            deleted = True
+            count += 1
+            if upper_line == -1:
+                upper_line = i
             for j in range(10):
                 game_field[i][j] = None
-    '''if deleted:
-        for i in range(20):
+    if count > 0:
+        for i in range(upper_line - 1, 0, -1):
             for j in range(10):
-                if game_field[i][j][0] == 1:
-                    k = i
-                    color = game_field[i][j][1]
-                    while k < 19 and game_field[k + 1][j][0] == 0:
-                        game_field[k][j] == (0, None)
-                        game_field[k + 1][j] = (1, color)
-                        k += 1'''
+                if game_field[i][j] is not None:
+                    game_field[i + count][j] = game_field[i][j]
+                    game_field[i + count][j].y += count
+                    game_field[i][j] = None
+        pg.mixer.Sound.play(line_deleted)
 
 
 def main():
     pg.init()    
     shape = random.choice(shapes_list)
-    active_tetromino = Tetromino(shape, 3, 0)    
+    active_tetromino = Tetromino(shape, 3, 0)
+    pg.mixer.music.play(-1)
     while True:
         clock.tick(60)
         screen.fill(GREY)
