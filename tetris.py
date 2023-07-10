@@ -43,28 +43,18 @@ def render_all_blocks():
 
 
 def check_full_lines():
-    count = 0
-    upper_line = -1
+    lines = []
     for i in range(20):
-        line = [game_field[i][j] for j in range(10)]
-        if all(line):
-            count += 1
-            if upper_line == -1:
-                upper_line = i
-            for j in range(10):
-                game_field[i][j] = None
-    if count > 0:        
-        for i in range(upper_line - 1, 0, -1):
-            for j in range(10):
-                if game_field[i][j] is not None:
-                    game_field[i + count][j] = game_field[i][j]
-                    game_field[i + count][j].y += count
-                    game_field[i][j] = None
-        pg.mixer.Sound.play(line_deleted)        
+       lines.append({k: v for k, v in game_field.items() if k[1] == i})
+    full_lines = [line for line in lines if len(line) == 10]
+    for line in full_lines:
+        for coords in line:
+            game_field.pop(coords)
+            
 
 
 def game_over():
-    return any(game_field[0])
+    return any([block.y <= 0 for block in game_field.values()])
 
 
 def main():
@@ -74,7 +64,7 @@ def main():
     pg.mixer.music.play(-1)
     faulthandler.enable()
     while True:
-        print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+        #print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
         clock.tick(60)
         screen.fill(GREY)
 
@@ -83,10 +73,10 @@ def main():
             shape = random.choice(shapes_list)
             active_tetromino = Tetromino(shape, 3, 0)
         active_tetromino.render(screen)
-        #check_full_lines()
+        check_full_lines()
         render_all_blocks()
-        draw_grid()        
-
+        draw_grid()  
+                
         for event in pg.event.get():
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
