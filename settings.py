@@ -20,4 +20,4 @@ PURPLE = (128, 0, 128)
 GREY = (127, 127, 127)
 
 # timers
-MOVE_DOWN_TIMER = 800 # milliseconds
+MOVE_DOWN_TIMER = 400 # milliseconds

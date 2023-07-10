@@ -28,25 +28,36 @@ class Tetromino:
             block.render(screen)
 
 
-    def rotate(self):
+    def rotate(self, game_field):
         if self.shape == "O":
             return
         pivot = pivots.get(self.shape)
         pivot_x = self.x + ((pivot - 4 * (pivot // 4)) - 1)
         pivot_y = self.y + (pivot // 4)
+        old_blocks = self.blocks
         for block in self.blocks:
             block.x -= pivot_x
             block.y -= pivot_y
             block.x, block.y = block.y, -block.x
             block.x += pivot_x
-            block.y += pivot_y
+            block.y += pivot_y        
+        while self.get_right() > RIGHT_BORDER - 1:
+            can_go_left = self.go_left(game_field)
+            if not can_go_left:
+                self.blocks = old_blocks
+                return
+        while self.get_left() < LEFT_BORDER:
+            can_go_right = self.go_right(game_field)
+            if not can_go_right:
+                self.blocks = old_blocks
+                return
 
 
     def go_down(self, game_field):
         if self.get_bottom() + 1 >= BOTTOM_BORDER:
             return False
         for block in self.blocks:
-            if game_field[block.y + 1][block.x] is not None:
+            if (block.x, block.y + 1) in game_field:
                 return False
         for block in self.blocks:
             block.y += 1
@@ -58,7 +69,7 @@ class Tetromino:
         if self.get_left() <= LEFT_BORDER:
             return False
         for block in self.blocks:
-            if game_field[block.y][block.x - 1] is not None:
+            if (block.x - 1, block.y) in game_field:
                 return False
         for block in self.blocks:
             block.x -= 1
@@ -70,7 +81,7 @@ class Tetromino:
         if self.get_right() + 1 >= RIGHT_BORDER:
             return False
         for block in self.blocks:
-            if game_field[block.y][block.x + 1] is not None:
+            if (block.x + 1, block.y) in game_field:
                 return False
         for block in self.blocks:
             block.x += 1
