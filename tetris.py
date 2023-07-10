@@ -80,7 +80,7 @@ def main():
         for event in pg.event.get():
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
-                    active_tetromino.rotate()
+                    active_tetromino.rotate(game_field)
                 if event.key == pg.K_LEFT:
                     active_tetromino.go_left(game_field)
                 if event.key == pg.K_RIGHT:
