@@ -56,9 +56,9 @@ def change_score(lines, score):
         score += 40
     elif lines == 2:
         score += 100
-    elif score == 3:
+    elif lines == 3:
         score += 300
-    elif score == 4:
+    elif lines == 4:
         score += 1200
     return score
 
@@ -105,7 +105,7 @@ def main():
     pg.mixer.music.play(-1)
     faulthandler.enable()
     while True:
-        #print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+        print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
         clock.tick(60)
         screen.fill(GREY)
         GAME_FONT.render_to(screen, (520, 700), 'SCORE')
@@ -123,22 +123,23 @@ def main():
         draw_next_tetromino(next_tetromino)      
      
         for event in pg.event.get():
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_SPACE:
-                    active_tetromino.rotate(game_field)
-                if event.key == pg.K_LEFT:
-                    active_tetromino.go_left(game_field)
-                if event.key == pg.K_RIGHT:
-                    active_tetromino.go_right(game_field)
-                if event.key == pg.K_DOWN:
-                    pg.time.set_timer(move_piece_down_event, 1)
-            if event.type == move_piece_down_event:
-                if not active_tetromino.go_down(game_field):
-                    active_tetromino.is_landed = True
-                    pg.time.set_timer(move_piece_down_event, MOVE_DOWN_TIMER)
-            if event.type == pg.KEYUP:
-                if event.key == pg.K_DOWN:
-                    pg.time.set_timer(move_piece_down_event, MOVE_DOWN_TIMER)
+            if not game_over():
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_SPACE:
+                        active_tetromino.rotate(game_field)
+                    if event.key == pg.K_LEFT:
+                        active_tetromino.go_left(game_field)
+                    if event.key == pg.K_RIGHT:
+                        active_tetromino.go_right(game_field)
+                    if event.key == pg.K_DOWN:
+                        pg.time.set_timer(move_piece_down_event, 1)
+                if event.type == move_piece_down_event:
+                    if not active_tetromino.go_down(game_field):
+                        active_tetromino.is_landed = True
+                        pg.time.set_timer(move_piece_down_event, MOVE_DOWN_TIMER)
+                if event.type == pg.KEYUP:
+                    if event.key == pg.K_DOWN:
+                        pg.time.set_timer(move_piece_down_event, MOVE_DOWN_TIMER)
             if event.type == pg.QUIT:
                 pg.quit()
         pg.display.update()
