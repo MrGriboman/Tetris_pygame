@@ -70,7 +70,7 @@ def check_full_lines(score):
     full_lines = [line for line in lines if len(line) == 10]
     if full_lines:        
         pg.mixer.Sound.play(line_deleted)
-        highest_line = min([list(line.keys())[0][1] for line in full_lines])
+        highest_line = max([list(line.keys())[0][1] for line in full_lines])
         number_of_lines = len(full_lines)
         score = change_score(number_of_lines, score)
         for line in full_lines:
@@ -80,12 +80,10 @@ def check_full_lines(score):
             for j in range(10):
                 x, y, = j, i
                 if (x, y) not in game_field:
-                    continue
-                count = 0
+                    continue                
                 block = game_field.get(x, y)
-                while (x, y + 1) not in game_field and count < number_of_lines:
-                    y += 1
-                    count += 1
+                while (x, y + 1) not in game_field and y + 1 <= BOTTOM_BORDER - 1:
+                    y += 1                    
                                 
                 game_field[(x, y)] = Block(x, y, game_field.get((j, i)).color)
                 game_field.pop((j, i))
@@ -97,7 +95,8 @@ def game_over():
 
 
 def main():   
-    score = 0  
+    score = 0
+    level = 1
     shape = random.choice(shapes_list)
     active_tetromino = Tetromino(shape, 3, 0)
     next_shape = random.choice(shapes_list)
@@ -115,8 +114,8 @@ def main():
                 shape = random.choice(shapes_list)
                 active_tetromino = Tetromino(next_tetromino.shape, 3, 0)
                 next_tetromino = Tetromino(shape, 13, 4)
-            active_tetromino.render(screen)        
-            score = check_full_lines(score)
+                score = check_full_lines(score)
+            active_tetromino.render(screen)                    
             render_all_blocks()
             draw_grid()
             draw_next_tetromino(next_tetromino)

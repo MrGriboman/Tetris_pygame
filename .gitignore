@@ -4,5 +4,5 @@ include
 __pycache__
 bin
 pyvenv.cfg
-sounds
-font.ttf
+#sounds
+#font.ttf
