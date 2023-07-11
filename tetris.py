@@ -53,12 +53,26 @@ def check_full_lines():
     for i in range(20):
        lines.append({k: v for k, v in game_field.items() if k[1] == i})
     full_lines = [line for line in lines if len(line) == 10]
-    if len(full_lines) > 0:
+    if full_lines:
         pg.mixer.Sound.play(line_deleted)
-    for line in full_lines:
-        for coords in line:
-            game_field.pop(coords)
-            
+        highest_line = min([list(line.keys())[0][1] for line in full_lines])
+        number_of_lines = len(full_lines)
+        for line in full_lines:
+            for coords in line:
+                game_field.pop(coords)
+        for i in range(highest_line - 1, -1, -1):
+            for j in range(10):
+                x, y, = j, i
+                if (x, y) not in game_field:
+                    continue
+                count = 0
+                block = game_field.get(x, y)
+                while (x, y + 1) not in game_field and count < number_of_lines:
+                    y += 1
+                    count += 1
+                                
+                game_field[(x, y)] = Block(x, y, game_field.get((j, i)).color)
+                game_field.pop((j, i))
 
 
 def game_over():
