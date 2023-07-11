@@ -35,12 +35,19 @@ class Tetromino:
         pivot_x = self.x + ((pivot - 4 * (pivot // 4)) - 1)
         pivot_y = self.y + (pivot // 4)
         old_blocks = self.blocks
+        new_blocks = []
         for block in self.blocks:
-            block.x -= pivot_x
-            block.y -= pivot_y
-            block.x, block.y = block.y, -block.x
-            block.x += pivot_x
-            block.y += pivot_y        
+            x, y, = block.x, block.y
+            x -= pivot_x
+            y -= pivot_y
+            x, y = y, -x
+            x += pivot_x
+            y += pivot_y
+            new_blocks.append(Block(x, y, self.color))
+        for block in new_blocks:
+            if (block.x, block.y) in game_field:
+                return
+        self.blocks = new_blocks       
         while self.get_right() > RIGHT_BORDER - 1:
             can_go_left = self.go_left(game_field)
             if not can_go_left:
@@ -49,6 +56,11 @@ class Tetromino:
         while self.get_left() < LEFT_BORDER:
             can_go_right = self.go_right(game_field)
             if not can_go_right:
+                self.blocks = old_blocks
+                return
+        while self.get_bottom() > BOTTOM_BORDER - 1:
+            can_go_up = self.go_up(game_field)
+            if not can_go_up:
                 self.blocks = old_blocks
                 return
 
@@ -62,6 +74,18 @@ class Tetromino:
         for block in self.blocks:
             block.y += 1
         self.y += 1
+        return True
+
+
+    def go_up(self, game_field):
+        if self.get_top() <= 0:
+            return False
+        for block in self.blocks:
+            if (block.x, block.y - 1) in game_field:
+                return False
+        for block in self.blocks:
+            block.y -= 1
+        self.y -= 1
         return True
 
 
@@ -91,6 +115,9 @@ class Tetromino:
 
     def get_bottom(self):
         return max([block.y for block in self.blocks])
+
+    def get_top(self):
+        return min([block.y for block in self.blocks])
 
     
     def get_left(self):

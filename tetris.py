@@ -32,6 +32,12 @@ def draw_grid():
             pg.draw.rect(screen, BLACK, rect, 1)
 
 
+def draw_next_tetromino(tetromino):
+    rect = pg.Rect(450, 100, BLOCK_SIZE * 5, BLOCK_SIZE * 5)
+    pg.draw.rect(screen, BLACK, rect)
+    tetromino.render(screen)
+
+
 def update_field(tetromino):
         for block in tetromino.blocks:
            game_field[(block.x, block.y)] = Block(block.x, block.y, tetromino.color)
@@ -47,6 +53,8 @@ def check_full_lines():
     for i in range(20):
        lines.append({k: v for k, v in game_field.items() if k[1] == i})
     full_lines = [line for line in lines if len(line) == 10]
+    if len(full_lines) > 0:
+        pg.mixer.Sound.play(line_deleted)
     for line in full_lines:
         for coords in line:
             game_field.pop(coords)
@@ -61,6 +69,8 @@ def main():
     pg.init()    
     shape = random.choice(shapes_list)
     active_tetromino = Tetromino(shape, 3, 0)
+    next_shape = random.choice(shapes_list)
+    next_tetromino = Tetromino(next_shape, 13, 4)
     pg.mixer.music.play(-1)
     faulthandler.enable()
     while True:
@@ -71,12 +81,14 @@ def main():
         if active_tetromino.is_landed:
             update_field(active_tetromino)
             shape = random.choice(shapes_list)
-            active_tetromino = Tetromino(shape, 3, 0)
-        active_tetromino.render(screen)
+            active_tetromino = Tetromino(next_tetromino.shape, 3, 0)
+            next_tetromino = Tetromino(shape, 13, 4)
+        active_tetromino.render(screen)        
         check_full_lines()
         render_all_blocks()
-        draw_grid()  
-                
+        draw_grid()
+        draw_next_tetromino(next_tetromino)      
+     
         for event in pg.event.get():
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
