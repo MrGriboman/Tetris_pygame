@@ -105,25 +105,28 @@ def main():
     pg.mixer.music.play(-1)
     faulthandler.enable()
     while True:
-        print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
         clock.tick(60)
-        screen.fill(GREY)
-        GAME_FONT.render_to(screen, (520, 700), 'SCORE')
-        GAME_FONT.render_to(screen, (550, 750), str(score))
+        if not game_over():
+            screen.fill(GREY)
+            GAME_FONT.render_to(screen, (520, 700), 'SCORE')
+            GAME_FONT.render_to(screen, (550, 750), str(score))
 
-        if active_tetromino.is_landed:
-            update_field(active_tetromino)
-            shape = random.choice(shapes_list)
-            active_tetromino = Tetromino(next_tetromino.shape, 3, 0)
-            next_tetromino = Tetromino(shape, 13, 4)
-        active_tetromino.render(screen)        
-        score = check_full_lines(score)
-        render_all_blocks()
-        draw_grid()
-        draw_next_tetromino(next_tetromino)      
-     
-        for event in pg.event.get():
-            if not game_over():
+            if active_tetromino.is_landed:
+                update_field(active_tetromino)
+                shape = random.choice(shapes_list)
+                active_tetromino = Tetromino(next_tetromino.shape, 3, 0)
+                next_tetromino = Tetromino(shape, 13, 4)
+            active_tetromino.render(screen)        
+            score = check_full_lines(score)
+            render_all_blocks()
+            draw_grid()
+            draw_next_tetromino(next_tetromino)
+        else:
+            screen.fill(BLACK)
+            GAME_FONT.render_to(screen, (SCREEN_WIDTH // 2 - 250, SCREEN_HEIGHT // 2), 'GAME OVER, PRESS SPACE TO RESTART', WHITE)
+            GAME_FONT.render_to(screen, (SCREEN_WIDTH // 2 - 75, SCREEN_HEIGHT // 2 + 100), f'SCORE: {score}', WHITE)
+        if not game_over():
+            for event in pg.event.get():            
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_SPACE:
                         active_tetromino.rotate(game_field)
@@ -140,8 +143,16 @@ def main():
                 if event.type == pg.KEYUP:
                     if event.key == pg.K_DOWN:
                         pg.time.set_timer(move_piece_down_event, MOVE_DOWN_TIMER)
-            if event.type == pg.QUIT:
-                pg.quit()
+                if event.type == pg.QUIT:
+                    pg.quit()
+        else:
+            for event in pg.event.get():
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_SPACE:
+                        game_field.clear()
+                        pg.mixer.music.play(-1)
+                if event.type == pg.QUIT:
+                    pg.quit()
         pg.display.update()
     
 
