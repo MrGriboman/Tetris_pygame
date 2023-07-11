@@ -7,8 +7,6 @@ from settings import *
 from tetromino import Tetromino
 from Block import Block
 from shapes import shapes
-import resource
-import faulthandler
 
 pg.init()   
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -103,7 +101,6 @@ def main():
     next_shape = random.choice(shapes_list)
     next_tetromino = Tetromino(next_shape, 13, 4)
     pg.mixer.music.play(-1)
-    faulthandler.enable()
     while True:
         clock.tick(60)
         if not game_over():
@@ -128,20 +125,22 @@ def main():
         if not game_over():
             for event in pg.event.get():            
                 if event.type == pg.KEYDOWN:
-                    if event.key == pg.K_SPACE:
+                    if event.key == pg.K_UP:
                         active_tetromino.rotate(game_field)
                     if event.key == pg.K_LEFT:
                         active_tetromino.go_left(game_field)
                     if event.key == pg.K_RIGHT:
                         active_tetromino.go_right(game_field)
                     if event.key == pg.K_DOWN:
+                        pg.time.set_timer(move_piece_down_event, 50)
+                    if event.key == pg.K_SPACE:
                         pg.time.set_timer(move_piece_down_event, 1)
                 if event.type == move_piece_down_event:
                     if not active_tetromino.go_down(game_field):
                         active_tetromino.is_landed = True
                         pg.time.set_timer(move_piece_down_event, MOVE_DOWN_TIMER)
                 if event.type == pg.KEYUP:
-                    if event.key == pg.K_DOWN:
+                    if event.key == pg.K_SPACE or event.key == pg.K_DOWN:
                         pg.time.set_timer(move_piece_down_event, MOVE_DOWN_TIMER)
                 if event.type == pg.QUIT:
                     pg.quit()
