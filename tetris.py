@@ -22,6 +22,8 @@ shapes_list = list(shapes.keys())
 pg.mixer.init()
 pg.mixer.music.load('sounds/main_theme.wav')
 line_deleted = pg.mixer.Sound('sounds/line_deleted.wav')
+rotation = pg.mixer.Sound('sounds/click.wav')
+hit_ground = pg.mixer.Sound('sounds/hit.wav')
 
 GAME_FONT = pg.freetype.Font('font.ttf', 24)
 
@@ -126,6 +128,7 @@ def main():
             for event in pg.event.get():            
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_UP:
+                        pg.mixer.Sound.play(rotation)
                         active_tetromino.rotate(game_field)
                     if event.key == pg.K_LEFT:
                         active_tetromino.go_left(game_field)
@@ -134,6 +137,7 @@ def main():
                     if event.key == pg.K_DOWN:
                         pg.time.set_timer(move_piece_down_event, 50)
                     if event.key == pg.K_SPACE:
+                        pg.mixer.Sound.play(hit_ground)
                         pg.time.set_timer(move_piece_down_event, 1)
                 if event.type == move_piece_down_event:
                     if not active_tetromino.go_down(game_field):
