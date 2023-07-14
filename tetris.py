@@ -63,7 +63,7 @@ def change_score(lines, score):
     return score
 
 
-def check_full_lines(score):
+def check_full_lines(score, active_tetromino, next_tetromino):
     lines = []
     for i in range(20):
        lines.append({k: v for k, v in game_field.items() if k[1] == i})
@@ -74,8 +74,15 @@ def check_full_lines(score):
         number_of_lines = len(full_lines)
         score = change_score(number_of_lines, score)
         for line in full_lines:
-            for coords in line:
+            for coords in line:                
                 game_field.pop(coords)
+                render_everything(score, active_tetromino, next_tetromino)
+                pg.display.flip()
+                delete = False
+                delete_time = pg.time.get_ticks() + 15
+                while not delete:
+                    if pg.time.get_ticks() == delete_time:
+                        delete = True
         for i in range(highest_line - 1, -1, -1):
             for j in range(10):
                 x, y, = j, i
@@ -94,6 +101,20 @@ def game_over():
     return any([block.y <= 0 for block in game_field.values()])
 
 
+def render_score(score):
+    GAME_FONT.render_to(screen, (520, 700), 'SCORE')
+    GAME_FONT.render_to(screen, (550, 750), str(score))
+
+
+def render_everything(score, active_tetromino, next_tetromino):
+    screen.fill(GREY)
+    render_score(score)
+    active_tetromino.render(screen)
+    render_all_blocks()
+    draw_grid()
+    draw_next_tetromino(next_tetromino)
+
+
 def main():   
     score = 0
     level = 1
@@ -105,20 +126,20 @@ def main():
     while True:
         clock.tick(60)
         if not game_over():
-            screen.fill(GREY)
-            GAME_FONT.render_to(screen, (520, 700), 'SCORE')
-            GAME_FONT.render_to(screen, (550, 750), str(score))
+            '''screen.fill(GREY)
+            render_score(score)'''
+            render_everything(score, active_tetromino, next_tetromino)
 
             if active_tetromino.is_landed:
                 update_field(active_tetromino)
                 shape = random.choice(shapes_list)
                 active_tetromino = Tetromino(next_tetromino.shape, 3, 0)
                 next_tetromino = Tetromino(shape, 13, 4)
-                score = check_full_lines(score)
-            active_tetromino.render(screen)                    
+                score = check_full_lines(score, active_tetromino, next_tetromino)
+            '''active_tetromino.render(screen)                    
             render_all_blocks()
             draw_grid()
-            draw_next_tetromino(next_tetromino)
+            draw_next_tetromino(next_tetromino)'''
         else:
             screen.fill(BLACK)
             GAME_FONT.render_to(screen, (SCREEN_WIDTH // 2 - 250, SCREEN_HEIGHT // 2), 'GAME OVER, PRESS SPACE TO RESTART', WHITE)

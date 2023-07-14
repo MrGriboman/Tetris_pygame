@@ -11,6 +11,8 @@ class Block:
     def render(self, screen):
         rect = pg.Rect(self.get_x(), self.get_y(), BLOCK_SIZE, BLOCK_SIZE)
         pg.draw.rect(screen, self.color, rect)
+        rect = pg.Rect(self.get_x(), self.get_y(), BLOCK_SIZE, BLOCK_SIZE)
+        pg.draw.rect(screen, BLACK, rect, True)
 
     
     def get_x(self):
