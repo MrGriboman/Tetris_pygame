@@ -67,22 +67,23 @@ def check_full_lines(score, active_tetromino, next_tetromino):
     lines = []
     for i in range(20):
        lines.append({k: v for k, v in game_field.items() if k[1] == i})
-    full_lines = [line for line in lines if len(line) == 10]
+    full_lines = [sorted(line, key=lambda x: x[0]) for line in lines if len(line) == 10]
     if full_lines:        
         pg.mixer.Sound.play(line_deleted)
-        highest_line = max([list(line.keys())[0][1] for line in full_lines])
+        highest_line = max([line[0][1] for line in full_lines])
         number_of_lines = len(full_lines)
         score = change_score(number_of_lines, score)
-        for line in full_lines:
-            for coords in line:                
-                game_field.pop(coords)
+        for i in range(10):            
+            for line in full_lines:                      
+                game_field.pop((i, line[0][1]))
                 render_everything(score, active_tetromino, next_tetromino)
                 pg.display.flip()
-                delete = False
-                delete_time = pg.time.get_ticks() + 15
-                while not delete:
-                    if pg.time.get_ticks() == delete_time:
-                        delete = True
+            delete = False
+            delete_time = pg.time.get_ticks() + 30
+            while not delete:
+                if pg.time.get_ticks() == delete_time:
+                    delete = True
+                
         for i in range(highest_line - 1, -1, -1):
             for j in range(10):
                 x, y, = j, i
