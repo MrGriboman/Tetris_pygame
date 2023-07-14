@@ -3,6 +3,7 @@ import pygame.freetype
 import math
 import sys
 import random
+import copy
 from settings import *
 from tetromino import Tetromino
 from Block import Block
@@ -70,31 +71,25 @@ def check_full_lines(score, active_tetromino, next_tetromino):
     full_lines = [sorted(line, key=lambda x: x[0]) for line in lines if len(line) == 10]
     if full_lines:        
         pg.mixer.Sound.play(line_deleted)
-        highest_line = max([line[0][1] for line in full_lines])
-        number_of_lines = len(full_lines)
+        number_of_lines = len(full_lines)        
         score = change_score(number_of_lines, score)
         for i in range(10):            
             for line in full_lines:                      
                 game_field.pop((i, line[0][1]))
-                render_everything(score, active_tetromino, next_tetromino)
+                render_everything(score, next_tetromino)
                 pg.display.flip()
-            delete = False
             delete_time = pg.time.get_ticks() + 30
-            while not delete:
-                if pg.time.get_ticks() == delete_time:
-                    delete = True
-                
-        for i in range(highest_line - 1, -1, -1):
-            for j in range(10):
-                x, y, = j, i
-                if (x, y) not in game_field:
-                    continue                
-                block = game_field.get(x, y)
-                while (x, y + 1) not in game_field and y + 1 <= BOTTOM_BORDER - 1:
-                    y += 1                    
-                                
-                game_field[(x, y)] = Block(x, y, game_field.get((j, i)).color)
-                game_field.pop((j, i))
+            while pg.time.get_ticks() != delete_time:
+                pass                
+        
+        for full_line in full_lines:
+            dict_items = copy.deepcopy(game_field)
+            for item in sorted(dict_items.items(), key=lambda x: -x[0][1]):
+                coords, block = item[0], item[1]
+                new_coords = (coords[0], coords[1] + 1)
+                if coords[1] < full_line[0][1] and new_coords not in game_field:
+                    game_field.pop(coords)
+                    game_field[new_coords] = Block(new_coords[0], new_coords[1], block.color)
     return score
 
 
@@ -107,10 +102,9 @@ def render_score(score):
     GAME_FONT.render_to(screen, (550, 750), str(score))
 
 
-def render_everything(score, active_tetromino, next_tetromino):
+def render_everything(score, next_tetromino):
     screen.fill(GREY)
     render_score(score)
-    active_tetromino.render(screen)
     render_all_blocks()
     draw_grid()
     draw_next_tetromino(next_tetromino)
@@ -126,21 +120,20 @@ def main():
     pg.mixer.music.play(-1)
     while True:
         clock.tick(60)
-        if not game_over():
-            '''screen.fill(GREY)
-            render_score(score)'''
-            render_everything(score, active_tetromino, next_tetromino)
-
+        if not game_over():            
+            render_everything(score, next_tetromino)
             if active_tetromino.is_landed:
                 update_field(active_tetromino)
                 shape = random.choice(shapes_list)
                 active_tetromino = Tetromino(next_tetromino.shape, 3, 0)
                 next_tetromino = Tetromino(shape, 13, 4)
+                render_everything(score, next_tetromino)
+                pg.display.flip()
+                timer = pg.time.get_ticks() + 30
+                while pg.time.get_ticks() != timer:
+                    pass
                 score = check_full_lines(score, active_tetromino, next_tetromino)
-            '''active_tetromino.render(screen)                    
-            render_all_blocks()
-            draw_grid()
-            draw_next_tetromino(next_tetromino)'''
+            active_tetromino.render(screen)
         else:
             screen.fill(BLACK)
             GAME_FONT.render_to(screen, (SCREEN_WIDTH // 2 - 250, SCREEN_HEIGHT // 2), 'GAME OVER, PRESS SPACE TO RESTART', WHITE)
@@ -174,6 +167,7 @@ def main():
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_SPACE:
                         game_field.clear()
+                        score = 0
                         pg.mixer.music.play(-1)
                 if event.type == pg.QUIT:
                     pg.quit()
